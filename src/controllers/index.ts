@@ -1,27 +1,24 @@
 import { Request, Response } from 'express'
-// import { Get, Controller } from '@/decorators'
-import {
-  Controller,
-  Middleware,
-  Get,
-  Post,
-  Put,
-  Delete,
-} from '@overnightjs/core'
+import { ClassErrorMiddleware, Controller, Get } from '@overnightjs/core'
+import { HttpException } from '@/exceptions/HttpException'
+import { StatusCodes } from 'http-status-codes'
+import errorMiddleware from '@/middlewares/error.middleware'
 
+@ClassErrorMiddleware(errorMiddleware)
 @Controller('')
 export default class DefaultRoute {
+  @Get('error')
+  getAll() {
+    throw new HttpException(
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      'Unexpected error!',
+    )
+  }
+
   @Get(':id')
   getById(req: Request, res: Response) {
     res.json({
-      baseRoute: req.params.id,
-    })
-  }
-
-  @Get('')
-  getAll(req: Request, res: Response) {
-    res.json({
-      all: true,
+      params: req.params,
     })
   }
 }
